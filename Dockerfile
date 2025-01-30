@@ -1,11 +1,18 @@
-FROM harshitbudhraja/tor-nginx-proxy
+FROM nginx:1.25-alpine
 
-LABEL name="custom-tor-nginx-proxy"
-LABEL version="1.0.1"
-LABEL maintainer="ALittlePatate (https://github.com/ALittlePatate/tor-proxy-fix)"
+# Metadata about the docker image
+LABEL name="tor-nginx-proxy-fix"
+LABEL version="1.0.0-beta-1.0"
+LABEL maintainer="ALittlePatate (https://github.com/ALittlePatate)"
 
-COPY default.conf /etc/nginx/conf.d/default.conf
+# Update packages and install tor
+RUN apk --update --allow-untrusted --repository http://dl-4.alpinelinux.org/alpine/edge/community/ add \
+    tor && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
-RUN nginx -t
+# Copy nginx and tor configurations
+COPY default.conf.template /etc/nginx/templates/default.conf.template
+COPY torrc /etc/tor/torrc
 
-EXPOSE 80
+# Add script to start tor
+COPY start-tor.sh /docker-entrypoint.d/40-start-tor.sh
+RUN chmod +x /docker-entrypoint.d/40-start-tor.sh

@@ -1,4 +1,4 @@
-FROM nginx:1.25-alpine
+FROM nginx:1.27.4-alpine
 
 # Metadata about the docker image
 LABEL name="tor-nginx-proxy-fix"
